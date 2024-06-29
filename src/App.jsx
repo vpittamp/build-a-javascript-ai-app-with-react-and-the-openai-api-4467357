@@ -7,13 +7,11 @@ import Description from "./components/Description";
 
 function App() {
   const [prompt, setPrompt] = useState("");
-  const [units, setUnits] = useState("metric");
   const [weatherDataLoading, setWeatherDataLoading] = useState(false);
-  const [weatherDescriptLoading, setWeatherDescriptLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   // Custom hook to handle API requests. Fires when prompt changes.
-  const { error, promptData, locationData, weatherData, weatherDescription } =
+  const { error, promptData, weatherData} =
     useApiRequests(prompt);
 
   // Set error message if error is returned from API request.

@@ -8,44 +8,29 @@ const PromptToLocation = (prompt) => {
     messages: [{ role: "user", content: prompt }],
     functions: [
       {
-        name: "displayData",
-        description: "Get the current weather in a given location.",
-        parameters: {
-          type: "object",
-          properties: {
-            country: {
-              type: "string",
-              description: "Country name.",
+        type: "function",
+        function: {
+          name: "search_query",
+          description:
+            "Execute a search query on the Microsoft Graph API to find messages based on user-defined criteria.",
+          parameters: {
+            type: "object",
+            properties: {
+              requestBody: {
+                type: "object",
+                description:
+                  "The body of the search request containing the KQL query string.",
+              },
+              properties: {
+                query: {
+                  type: "string",
+                  description:
+                    "The KQL query string for searching messages, possibly using XRANK for boosting.",
+                },
+              },
             },
-            countryCode: {
-              type: "string",
-              description: "Country code. Use ISO-3166",
-            },
-            USstate: {
-              type: "string",
-              description: "Full state name.",
-            },
-            state: {
-              type: "string",
-              description: "Two-letter state code.",
-            },
-            city: {
-              type: "string",
-              description: "City name.",
-            },
-            unit: {
-              type: "string",
-              description: "location unit: metric or imperial.",
-            },
+            required: ["query"],
           },
-          required: [
-            "countryCode",
-            "country",
-            "USstate",
-            "state",
-            "city",
-            "unit",
-          ],
         },
       },
     ],
@@ -69,27 +54,16 @@ const PromptToLocation = (prompt) => {
       );
       console.log(promptRes);
 
-      const locationString = () => {
-        if (promptRes.countryCode === "US") {
-          return `${promptRes.city},${promptRes.state},${promptRes.country}`;
-        } else {
-          return `${promptRes.city},${promptRes.country}`;
-        }
-      };
-
       const promptData = {
-        locationString: locationString(),
-        units: promptRes.unit,
-        country: promptRes.country,
-        USstate: promptRes.USstate
-      }
+        query: promptRes.query,
+      };
 
       return promptData;
     })
     .catch((error) => {
       console.log("Error:", error);
       return Promise.reject(
-        "Unable to identify a location from your question. Please try again."
+        "Unable to identify a query from your question. Please try again."
       );
     });
 };
